@@ -1,0 +1,8 @@
+# values-dev.yaml
+
+image:
+  tag: dev-latest
+
+ingress:
+  enabled: true
+

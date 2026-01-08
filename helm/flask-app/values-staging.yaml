@@ -1,0 +1,8 @@
+# values-staging.yaml
+
+image:
+  tag: staging-latest
+
+ingress:
+  enabled: true
+

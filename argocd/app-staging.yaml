@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flask-staging
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: flask=zahidbilal/flask-gitops
+    argocd-image-updater.argoproj.io/flask.update-strategy: latest
+spec:
+  source:
+    repoURL: https://github.com/zahidbilal/gitops-eks-flask.git
+    path: helm/flask-app
+    targetRevision: staging
+    helm:
+      valueFiles:
+        - values-staging.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
