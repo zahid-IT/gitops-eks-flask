@@ -5,13 +5,21 @@ pipeline {
     IMAGE = "zahidbilal/flask-gitops"
     BASE_VERSION = "1.0"
     DOCKER_CREDENTIALS = "dockerhub-creds"
+    GIT_CREDENTIALS = "github-creds"
   }
 
   stages {
 
     stage('Checkout') {
       steps {
-        checkout scm
+        echo "Checking out branch: ${env.BRANCH_NAME}"
+        checkout([$class: 'GitSCM', 
+          branches: [[name: env.BRANCH_NAME]],
+          userRemoteConfigs: [[
+            url: 'https://github.com/<your-username>/gitops-eks-flask.git',
+            credentialsId: GIT_CREDENTIALS
+          ]]
+        ])
       }
     }
 
@@ -21,17 +29,22 @@ pipeline {
           def envName = env.BRANCH_NAME
           def version = "${BASE_VERSION}.${env.BUILD_NUMBER}"
 
+          if (!(envName in ['dev','staging','prod'])) {
+            error "Unsupported branch: ${envName}"
+          }
+
           env.VERSION_TAG = "${envName}-${version}"
           env.LATEST_TAG  = "${envName}-latest"
 
-          echo "Version tag: ${env.VERSION_TAG}"
-          echo "Latest tag: ${env.LATEST_TAG}"
+          echo "Version tag set to: ${env.VERSION_TAG}"
+          echo "Latest tag set to: ${env.LATEST_TAG}"
         }
       }
     }
 
-    stage('Build Image') {
+    stage('Build Docker Image') {
       steps {
+        echo "Building Docker image: ${IMAGE}:${VERSION_TAG} and ${IMAGE}:${LATEST_TAG}"
         sh """
           docker build -f docker/Dockerfile \
             -t ${IMAGE}:${VERSION_TAG} \
@@ -40,21 +53,31 @@ pipeline {
       }
     }
 
-    stage('Push Image') {
+    stage('Push Docker Image') {
       steps {
         withCredentials([usernamePassword(
           credentialsId: DOCKER_CREDENTIALS,
           usernameVariable: 'DOCKER_USER',
           passwordVariable: 'DOCKER_PASS'
         )]) {
+          echo "Logging in to DockerHub as ${DOCKER_USER}"
           sh """
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
             docker push ${IMAGE}:${VERSION_TAG}
             docker push ${IMAGE}:${LATEST_TAG}
+            docker logout
           """
         }
       }
     }
   }
-}
 
+  post {
+    success {
+      echo "Docker images pushed successfully: ${VERSION_TAG} and ${LATEST_TAG}"
+    }
+    failure {
+      echo "Pipeline failed on branch: ${env.BRANCH_NAME}"
+    }
+  }
+}
