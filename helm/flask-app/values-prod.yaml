@@ -1,10 +1,4 @@
-# values-prod.yaml
-
 replicaCount: 3
 
 image:
   tag: prod-latest
-
-ingress:
-  enabled: false
-
