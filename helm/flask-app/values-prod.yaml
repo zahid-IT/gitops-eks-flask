@@ -6,5 +6,5 @@ image:
   tag: prod-latest
 
 ingress:
-  enabled: true
+  enabled: false
 
