@@ -1,8 +1,4 @@
-# values-dev.yaml
+replicaCount: 1
 
 image:
   tag: dev-latest
-
-ingress:
-  enabled: false
-
