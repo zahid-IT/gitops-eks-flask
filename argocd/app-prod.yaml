@@ -5,11 +5,16 @@ metadata:
   annotations:
     argocd-image-updater.argoproj.io/image-list: flask=zahidbilal/flask-gitops
     argocd-image-updater.argoproj.io/flask.update-strategy: latest
+    argocd-image-updater.argoproj.io/flask.helm.image-name: image.repository
+    argocd-image-updater.argoproj.io/flask.helm.image-tag: image.tag
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: prod
 spec:
+  project: default
   source:
-    repoURL: https://github.com/zahidbilal/gitops-eks-flask.git
-    path: helm/flask-app
+    repoURL: https://github.com/zahid-IT/gitops-eks-flask.git
     targetRevision: prod
+    path: helm/flask-app
     helm:
       valueFiles:
         - values-prod.yaml
