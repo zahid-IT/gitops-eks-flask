@@ -2,14 +2,8 @@ replicaCount: 1
 
 image:
   repository: zahidbilal/flask-gitops
-  tag: dev-latest
+  tag: latest
 
 service:
   type: ClusterIP
   port: 80
-
-ingress:
-  enabled: true
-  scheme: internet-facing
-  path: /
-
