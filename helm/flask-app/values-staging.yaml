@@ -1,4 +1,10 @@
+# values-staging.yaml
 replicaCount: 2
 
 image:
-  tag: staging-latest
+  repository: "zahidbilal/flask-gitops"
+  tag: "staging-latest"
+
+service:
+  type: ClusterIP
+  port: 80
