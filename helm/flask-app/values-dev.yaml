@@ -4,5 +4,5 @@ image:
   tag: dev-latest
 
 ingress:
-  enabled: true
+  enabled: false
 
