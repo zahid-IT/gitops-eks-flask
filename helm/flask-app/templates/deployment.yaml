@@ -1,44 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "flask-app.fullname" . }}
+  name: {{ .Release.Name }}-flask-app
   labels:
-    {{- include "flask-app.labels" . | nindent 4 }}
+    app: {{ .Release.Name }}-flask
+    version: {{ .Values.image.tag }}
+    managed-by: helm
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "flask-app.selectorLabels" . | nindent 6 }}
+      app: {{ .Release.Name }}-flask
   template:
     metadata:
       labels:
-        {{- include "flask-app.selectorLabels" . | nindent 8 }}
+        app: {{ .Release.Name }}-flask
+        version: {{ .Values.image.tag }}
     spec:
       containers:
       - name: flask
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
         ports:
         - containerPort: 5000
+          name: http
         {{- if .Values.resources }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
         env:
+        - name: FLASK_APP
+          value: "app.py"
         - name: FLASK_ENV
           value: {{ .Values.environment | default "production" }}
-        {{- if .Values.livenessProbe.enabled }}
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        {{- end }}
-        {{- if .Values.readinessProbe.enabled }}
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        {{- end }}
+        - name: PORT
+          value: "5000"
