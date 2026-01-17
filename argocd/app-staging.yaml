@@ -10,6 +10,8 @@ metadata:
     argocd-image-updater.argoproj.io/flask.helm.image-tag: image.tag
     argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/git-branch: staging
+    # Staging can auto-update but with filters
+    argocd-image-updater.argoproj.io/flask.force-update: "true"
 spec:
   project: default
   source:
@@ -18,11 +20,15 @@ spec:
     path: helm/flask-app
     helm:
       valueFiles:
+        - values.yaml
         - values-staging.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: staging
   syncPolicy:
     automated:
-      prune: true
-      selfHeal: true
+      prune: true      # Auto-prune for staging
+      selfHeal: true   # Auto-heal for staging
+    syncOptions:
+    - CreateNamespace=true
+    - PruneLast=true
