@@ -1,16 +1,12 @@
 replicaCount: 3
-
 image:
   repository: "zahidbilal/flask-gitops"
   tag: "prod-latest"
-
 environment: "production"
-
 service:
   type: NodePort
   port: 80
   nodePort: 30010
-
 resources:
   limits:
     cpu: 500m
@@ -18,6 +14,5 @@ resources:
   requests:
     cpu: 250m
     memory: 512Mi
-
 ingress:
   enabled: false
