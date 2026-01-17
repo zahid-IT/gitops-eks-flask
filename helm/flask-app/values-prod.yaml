@@ -1,10 +1,23 @@
-# values-prod.yaml
 replicaCount: 3
 
 image:
   repository: "zahidbilal/flask-gitops"
   tag: "prod-latest"
 
+environment: "production"
+
 service:
-  type: ClusterIP
+  type: NodePort
   port: 80
+  nodePort: 30010
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+ingress:
+  enabled: false
