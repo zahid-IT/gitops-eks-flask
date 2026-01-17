@@ -3,7 +3,19 @@ replicaCount: 1
 image:
   repository: zahidbilal/flask-gitops
   tag: latest
+  pullPolicy: IfNotPresent
 
 service:
-  type: ClusterIP
+  type: NodePort  # ← Changed this line!
   port: 80
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+ingress:
+  enabled: false
