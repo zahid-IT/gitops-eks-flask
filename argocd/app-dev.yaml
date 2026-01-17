@@ -18,6 +18,7 @@ spec:
     path: helm/flask-app
     helm:
       valueFiles:
+        - values.yaml
         - values-dev.yaml
   destination:
     server: https://kubernetes.default.svc
@@ -26,3 +27,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
