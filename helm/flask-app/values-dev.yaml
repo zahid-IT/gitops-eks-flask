@@ -1,27 +1,12 @@
-# Flask Application - Development Environment for KIND
 replicaCount: 1
-
 image:
   repository: "zahidbilal/flask-gitops"
   tag: "dev-latest"
-
-# Environment configuration
 environment: "development"
-env:
-  - name: FLASK_ENV
-    value: "development"
-  - name: DEBUG
-    value: "True"
-  - name: PORT
-    value: "5000"
-
-# Service configuration for KIND
 service:
-  type: NodePort  # Must be NodePort for KIND accessibility
+  type: NodePort
   port: 80
-  nodePort: 30008  # Unique port for dev (30008-30010 range)
-
-# Resource limits for KIND cluster stability
+  nodePort: 30008
 resources:
   limits:
     cpu: 200m
@@ -29,27 +14,5 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
-
-# Health checks
-livenessProbe:
-  enabled: true
-  path: /health
-  initialDelaySeconds: 30
-  periodSeconds: 10
-
-readinessProbe:
-  enabled: true
-  path: /health
-  initialDelaySeconds: 5
-  periodSeconds: 5
-
-# Explicitly disable ingress (no ingress.yaml template)
 ingress:
   enabled: false
-
-# Optional: Add strategy for updates
-strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxSurge: 1
-    maxUnavailable: 0
