@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
   annotations:
     argocd-image-updater.argoproj.io/image-list: flask=zahidbilal/flask-gitops
-    argocd-image-updater.argoproj.io/flask.update-strategy: latest
+    argocd-image-updater.argoproj.io/flask.update-strategy: semver
     argocd-image-updater.argoproj.io/flask.helm.image-name: image.repository
     argocd-image-updater.argoproj.io/flask.helm.image-tag: image.tag
     argocd-image-updater.argoproj.io/write-back-method: git
@@ -18,7 +18,14 @@ spec:
     path: helm/flask-app
     helm:
       valueFiles:
+        - values.yaml      # ← Added base values
         - values-prod.yaml
+      # Direct parameters for KIND
+      parameters:
+        - name: service.type
+          value: NodePort
+        - name: service.nodePort
+          value: "30010"
   destination:
     server: https://kubernetes.default.svc
     namespace: prod
@@ -26,3 +33,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
